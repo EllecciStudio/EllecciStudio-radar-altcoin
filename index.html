@@ -164,6 +164,7 @@ footer .by img{width:18px;height:18px;border-radius:4px;object-fit:contain}
     <div class="seg" id="segWin">
       <button type="button" data-v="180">180g</button>
       <button type="button" data-v="365">365g</button>
+      <button type="button" data-v="1095">3 anni</button>
     </div>
   </div>
   <div class="ctl"><span class="label">Periodo grafico</span>
@@ -244,8 +245,8 @@ footer .by img{width:18px;height:18px;border-radius:4px;object-fit:contain}
     </div>
     <div>
       <h4>La stima usata qui</h4>
-      <p>I dati on-chain di Glassnode sono a pagamento, quindi questa pagina usa un'approssimazione basata sugli scambi: per ogni coin prende le candele giornaliere Binance degli ultimi 180 o 365 giorni e calcola che quota del <strong>volume scambiato</strong> è passata di mano a un prezzo inferiore a quello di oggi. È una stima del prezzo di carico di chi compra e vende.</p>
-      <p>I livelli assoluti non coincidono con Glassnode, ma la forma e i cambi di regime sono simili. Stablecoin e token "wrapped" sono esclusi; entrano solo le coin quotate in USDT su Binance.</p>
+      <p>I dati on-chain di Glassnode sono a pagamento, quindi questa pagina usa un'approssimazione basata sugli scambi: per ogni coin prende le candele giornaliere Binance degli ultimi 180 giorni, 365 giorni o 3 anni e calcola che quota del <strong>volume scambiato</strong> è passata di mano a un prezzo inferiore a quello di oggi. È una stima del prezzo di carico di chi compra e vende.</p>
+      <p>Con la finestra di 3 anni entrano nel calcolo anche i possessori rimasti bloccati ai vecchi massimi, e i valori si avvicinano di più a quelli di Glassnode. I livelli assoluti comunque non coincidono con Glassnode, ma la forma e i cambi di regime sono simili. Stablecoin e token "wrapped" sono esclusi; entrano solo le coin quotate in USDT su Binance.</p>
     </div>
   </div>
 </section>
@@ -318,6 +319,14 @@ async function pool(items, n, fn, onTick){
   return out;
 }
 
+async function fetchKlines(sym, total){
+  const base = `/api/v3/klines?symbol=${sym}USDT&interval=1d`;
+  const recent = await bin(base + "&limit=1000");
+  if (total <= 1000 || recent.length < 1000) return recent;
+  const older = await bin(base + `&limit=${total - 1000}&endTime=${recent[0][0] - 1}`).catch(() => []);
+  return older.concat(recent);
+}
+
 /* ---------- universe ---------- */
 function excluded(sym, name = ""){
   const s = sym.toUpperCase();
@@ -357,7 +366,8 @@ function profitSeries(k, W){
   const n = k.length, tp = new Float64Array(n), qv = new Float64Array(n), cl = new Float64Array(n);
   for (let i = 0; i < n; i++){ cl[i] = +k[i][4]; tp[i] = (+k[i][2] + +k[i][3] + cl[i]) / 3; qv[i] = +k[i][7] || (+k[i][5] * tp[i]); }
   const out = new Map();
-  for (let i = 0; i < n; i++){
+  const from = Math.max(0, n - 1000); // only the days the charts can show
+  for (let i = from; i < n; i++){
     const s = Math.max(0, i - W + 1); if (i - s + 1 < 30) continue;
     let inP = 0, tot = 0; const p = cl[i];
     for (let j = s; j <= i; j++){ tot += qv[j]; if (tp[j] < p) inP += qv[j]; else if (tp[j] === p) inP += qv[j] / 2; }
@@ -389,7 +399,7 @@ async function load(force){
     const coins = await loadUniverse(S.uni);
     prog.style.width = "8%";
     const all = [{sym: "BTC", name: "Bitcoin", rank: 1}, ...coins];
-    const kl = await pool(all, 6, c => bin(`/api/v3/klines?symbol=${c.sym}USDT&interval=1d&limit=1000`),
+    const kl = await pool(all, 6, c => fetchKlines(c.sym, S.win > 900 ? 2000 : 1000),
       (d, t) => { prog.style.width = (8 + d / t * 88).toFixed(1) + "%"; });
     if (!kl[0] || !kl[0].length) throw new Error("Binance non risponde per BTC");
     const btcK = kl[0];
@@ -420,7 +430,7 @@ async function load(force){
     D = { at: Date.now(), win: S.win, uni: S.uni, dates,
       btcPrice: btcK.map(r => +r[4]), btcP: dates.map(t => btcProfit.has(t) ? Math.round(btcProfit.get(t) * 10) / 10 : null),
       med, br, maPct, rows };
-    store.set("ra_cache_v1", D);
+    store.set("ra_cache_v1", D); // may exceed quota with 3-year data; ignored by store.set
     prog.style.width = "100%";
     setTimeout(() => prog.style.width = "0", 600);
     render();
