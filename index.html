@@ -143,8 +143,23 @@ footer .by img{width:18px;height:18px;border-radius:4px;object-fit:contain}
 .gate .err{color:var(--bad);font-size:13px;min-height:1.2em}
 .lock{background:transparent;color:var(--muted)}
 
+/* others */
+.oth-read{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:center}
+.oth-read h2{margin:4px 0 6px;font:700 20px/1.2 var(--display);text-wrap:balance}
+.oth-read p{margin:0;color:var(--muted)}
+.oth-read .note{margin-top:8px;font-size:12px;color:var(--faint)}
+.matrix{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:4px;font:11px var(--mono)}
+.matrix .h{color:var(--faint);text-align:center;padding:4px 2px;letter-spacing:.06em;text-transform:uppercase;font-family:var(--display)}
+.matrix .r{color:var(--faint);display:flex;align-items:center;padding-right:6px;text-transform:uppercase;font-family:var(--display);letter-spacing:.06em}
+.matrix .c{border:1px solid var(--line2);border-radius:8px;padding:8px 6px;text-align:center;color:var(--muted);background:var(--surface2);line-height:1.3;min-height:48px;display:grid;place-items:center}
+.matrix .c.on{border-color:var(--alt);background:var(--alt-soft);color:var(--text);box-shadow:0 0 0 1px var(--alt) inset}
+.charts2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.charts2 .chartbox{height:clamp(240px,30vw,320px)}
+.charts2 h4{margin:0 0 6px;font:600 13px var(--display);letter-spacing:.04em;color:var(--muted)}
+
 @media (max-width:720px){
   .regime{grid-template-columns:1fr}
+  .oth-read{grid-template-columns:1fr}
   .kpi .v{font-size:22px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -230,6 +245,32 @@ footer .by img{width:18px;height:18px;border-radius:4px;object-fit:contain}
   </div>
 </section>
 
+<section class="panel" aria-label="Forza delle altcoin piccole">
+  <div class="panel-h">
+    <h3>Forza delle altcoin piccole · OTHERS</h3>
+    <small>Altcoin escluse le prime 10 per capitalizzazione</small>
+  </div>
+  <section class="kpis" aria-label="Indicatori OTHERS">
+    <div class="kpi"><span class="label">OTHERS (stima)</span><span class="v num" id="oVal" style="color:var(--cyan)">—</span><span class="s" id="oValS">—</span></div>
+    <div class="kpi"><span class="label">Rispetto a MA200</span><span class="v num" id="oMa">—</span><span class="s" id="oMaS">—</span></div>
+    <div class="kpi"><span class="label">OTHERS / BTC</span><span class="v num" id="oRel">—</span><span class="s" id="oRelS">—</span></div>
+    <div class="kpi"><span class="label">Forza</span><span class="v" id="oForce" style="font:600 20px/1.2 var(--display)">—</span><span class="s" id="oForceS">—</span></div>
+  </section>
+  <div class="oth-read">
+    <div>
+      <div class="label">Lettura combinata · valore × forza</div>
+      <h2 id="cT">—</h2>
+      <p id="cD">In attesa dei dati.</p>
+      <p class="note">Descrive la fase del mercato, non è un segnale di acquisto o vendita e non è stato testato con un backtest.</p>
+    </div>
+    <div class="matrix" id="matrix" aria-label="Tabella valore per forza"></div>
+  </div>
+  <div class="charts2">
+    <div><h4>OTHERS e media a 200 giorni</h4><div class="chartbox"><canvas id="chOth"></canvas></div></div>
+    <div><h4>OTHERS diviso BTC · sale quando le altcoin piccole battono Bitcoin</h4><div class="chartbox"><canvas id="chRel"></canvas></div></div>
+  </div>
+</section>
+
 <section class="panel">
   <div class="panel-h">
     <h3>Offerta in profitto nel tempo</h3>
@@ -269,6 +310,11 @@ footer .by img{width:18px;height:18px;border-radius:4px;object-fit:contain}
 <section class="panel">
   <div class="panel-h"><h3>Come sono costruite le linee</h3></div>
   <div class="method">
+    <div>
+      <h4>OTHERS (stima)</h4>
+      <p>Su TradingView OTHERS è la capitalizzazione di tutte le crypto tranne le prime 10. Qui è ricostruito così: si prendono le altcoin dell'universo scelto che sono fuori dalla top 10 di CoinGecko (stablecoin e token "wrapped" esclusi), e giorno per giorno si calcola la loro variazione media <strong>pesata per capitalizzazione</strong> dai prezzi Binance. Il livello di oggi è poi allineato al valore reale di CoinGecko (capitalizzazione totale meno le prime 10), quindi il numero attuale è quello vero e la storia è la stima.</p>
+      <p>Limiti: usa la quantità in circolazione di oggi e solo coin che esistono ancora (chi è sparito non conta), per cui la storia lontana è meno precisa. Con l'universo <em>Top 150</em> la stima è più completa.</p>
+    </div>
     <div>
       <h4>La linea blu di Glassnode</h4>
       <p>Per ognuna delle prime 500 coin per capitalizzazione, Glassnode calcola la <em>Percent Supply in Profit</em>: la quota di monete in circolazione il cui ultimo spostamento on-chain è avvenuto a un prezzo più basso di quello attuale. Per BTC guarda gli UTXO, per i token sugli account e i trasferimenti.</p>
@@ -365,7 +411,10 @@ function excluded(sym, name = ""){
   if (/^(UP|DOWN|BULL|BEAR)$|(UP|DOWN|BULL|BEAR)$/.test(s) && s.length > 4) return true;
   return /\b(usd|wrapped|staked|bridged|restaked|liquid staking|tokenized)\b/i.test(name) && !/^(USUAL|USTC)$/.test(s);
 }
+const CG = {top10: null, total: null};
 async function loadUniverse(n){
+  CG.top10 = null; CG.total = null;
+  getJSON("https://api.coingecko.com/api/v3/global").then(j => { CG.total = j?.data?.total_market_cap?.usd || null; }).catch(() => {});
   const priceList = await bin("/api/v3/ticker/price");
   const listed = new Set(priceList.map(p => p.symbol));
   let coins = [];
@@ -376,8 +425,11 @@ async function loadUniverse(n){
       const s = c.symbol.toUpperCase();
       if (s === "BTC" || seen.has(s) || excluded(s, c.name) || !listed.has(s + "USDT")) continue;
       if (c.current_price > 0.97 && c.current_price < 1.03 && /usd/i.test(c.name + c.symbol)) continue;
-      seen.add(s); coins.push({sym: s, name: c.name, rank: c.market_cap_rank || 9999});
+      const sup = c.circulating_supply > 0 ? c.circulating_supply : (c.market_cap > 0 && c.current_price > 0 ? c.market_cap / c.current_price : null);
+      seen.add(s); coins.push({sym: s, name: c.name, rank: c.market_cap_rank || 9999, sup});
     }
+    const ranked = pages.flat().filter(c => c.market_cap_rank && c.market_cap > 0).sort((a, b) => a.market_cap_rank - b.market_cap_rank);
+    CG.top10 = ranked.length >= 10 ? ranked.slice(0, 10).reduce((a, c) => a + c.market_cap, 0) : null;
   } catch {}
   if (coins.length < 20){
     // fallback: rank by 24h USDT volume on Binance
@@ -416,10 +468,43 @@ function aboveMAat(k, idx){
   let s = 0; for (let i = idx - 199; i <= idx; i++) s += +k[i][4];
   return +k[idx][4] > s / 200;
 }
+// OTHERS: chain-linked, cap-weighted (current supply) index of alts ranked > 10
+function othersIndex(dates, series){
+  const useCap = series.some(x => x.sup > 0);
+  const idx = new Array(dates.length).fill(null), cnt = new Array(dates.length).fill(0);
+  let started = false;
+  for (let d = 1; d < dates.length; d++){
+    let sw = 0, swr = 0, n = 0;
+    for (const x of series){
+      const a = x.px[d - 1], b = x.px[d];
+      if (!(a > 0) || !(b > 0)) continue;
+      const r = b / a; if (r > 4 || r < 0.2) continue; // data glitches (redenominations, symbol reuse)
+      const w = useCap ? (x.sup > 0 ? a * x.sup : 0) : 1;
+      if (!w) continue;
+      sw += w; swr += w * r; n++;
+    }
+    cnt[d] = n;
+    if (n >= 5 && sw > 0){
+      if (!started){ idx[d - 1] = 100; started = true; }
+      idx[d] = idx[d - 1] * swr / sw;
+    } else if (started) idx[d] = idx[d - 1];
+  }
+  return {idx, cnt};
+}
+function sma(a, n){
+  const out = new Array(a.length).fill(null); let s = 0, k = 0;
+  for (let i = 0; i < a.length; i++){
+    if (a[i] == null){ s = 0; k = 0; continue; }
+    s += a[i]; k++;
+    if (k > n){ s -= a[i - n]; k = n; }
+    if (k === n) out[i] = s / n;
+  }
+  return out;
+}
 function median(a){ if (!a.length) return null; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
 
 /* ---------- state ---------- */
-let D = store.get("ra_cache_v1", null);
+let D = store.get("ra_cache_v2", null), D_oth = null;
 let loading = false, timer = null, chart = null, nextAt = 0;
 
 async function load(force){
@@ -436,9 +521,14 @@ async function load(force){
     const btcK = kl[0];
     const dates = btcK.map(r => r[0]);
     const btcProfit = profitSeries(btcK, S.win);
-    const rows = [];
+    const rows = [], oth = [];
     for (let i = 1; i < all.length; i++){
-      const k = kl[i]; if (!k || k.length < 31) continue;
+      const k = kl[i]; if (!k || k.length < 2) continue;
+      if (all[i].rank > 10){
+        const cm = new Map(k.map(r => [r[0], +r[4]]));
+        oth.push({sup: all[i].sup, px: dates.map(t => cm.has(t) ? cm.get(t) : null)});
+      }
+      if (k.length < 31) continue;
       const ps = profitSeries(k, S.win);
       const maMap = new Map();
       for (let j = 199; j < k.length; j++) maMap.set(k[j][0], aboveMAat(k, j));
@@ -458,10 +548,20 @@ async function load(force){
       maPct.push(m.length >= 10 ? m.reduce((a, b) => a + b, 0) / m.length * 100 : null);
     }
     rows.forEach(r => delete r.mas);
-    D = { at: Date.now(), win: S.win, uni: S.uni, dates,
+    const O = othersIndex(dates, oth);
+    let [olast] = lastVal(O.idx), scale = 1, real = false;
+    for (let w = 0; w < 30 && CG.total == null; w++) await new Promise(r => setTimeout(r, 100));
+    if (olast && CG.total && CG.top10 && CG.total > CG.top10){ scale = (CG.total - CG.top10) / olast; real = true; }
+    const othV = O.idx.map(v => v == null ? null : v * scale);
+    const relRaw = othV.map((v, d) => v != null && btcK[d] ? v / +btcK[d][4] : null);
+    const r0 = relRaw.find(v => v != null);
+    const rel = relRaw.map(v => v == null ? null : Math.round(v / r0 * 1e4) / 100);
+    const [, oli] = lastVal(othV);
+    D_oth = { v: othV, ma: sma(othV, 200), rel, relMa: sma(rel, 200), real, n: oli >= 0 ? O.cnt[oli] : 0 };
+    D = { at: Date.now(), win: S.win, uni: S.uni, dates, oth: D_oth,
       btcPrice: btcK.map(r => +r[4]), btcP: dates.map(t => btcProfit.has(t) ? Math.round(btcProfit.get(t) * 10) / 10 : null),
       med, br, maPct, rows };
-    store.set("ra_cache_v1", D); // may exceed quota with 3-year data; ignored by store.set
+    store.set("ra_cache_v2", D); // may exceed quota with 3-year data; ignored by store.set
     prog.style.width = "100%";
     setTimeout(() => prog.style.width = "0", 600);
     render();
@@ -522,9 +622,90 @@ function render(){
 
   $("foot").textContent = `${D.rows.length} altcoin analizzate · finestra ${D.win} giorni · ultimo aggiornamento ${new Date(D.at).toLocaleString("it-IT")}. Dati: CoinGecko (classifica) e Binance (candele giornaliere). Non è un consiglio d'investimento.`;
 
+  renderOthers(m);
   drawChart(); drawHeat(); drawTable(); tickStatus();
 }
 
+const fmtBig = v => v == null ? "—" : v >= 1e12 ? "$" + (v / 1e12).toLocaleString("it-IT", {maximumFractionDigits: 2}) + " T" : v >= 1e9 ? "$" + (v / 1e9).toLocaleString("it-IT", {maximumFractionDigits: 0}) + " mld" : v.toLocaleString("it-IT", {maximumFractionDigits: 1});
+function valueBand(m){ return m == null ? null : m < 40 ? 0 : m < 60 ? 1 : 2; }
+function forceOf(O){
+  const [v, i] = lastVal(O.v); const ma = O.ma[i], maOld = i >= 20 ? O.ma[i - 20] : null;
+  if (v == null || ma == null || maOld == null) return null;
+  const above = v > ma, rising = ma > maOld;
+  if (above && rising) return {k: "trend", up: true, t: "In trend", d: "sopra la media e media in salita", c: "var(--good)"};
+  if (above) return {k: "ripresa", up: true, t: "In ripresa", d: "sopra la media, media ancora in discesa", c: "var(--warn)"};
+  if (rising) return {k: "debole", up: false, t: "In frenata", d: "sotto la media, media ancora in salita", c: "var(--warn)"};
+  return {k: "ribasso", up: false, t: "In ribasso", d: "sotto la media e media in discesa", c: "var(--bad)"};
+}
+const READ = {
+  "0u": ["Il momento più interessante", "Le altcoin sono ancora a sconto (poche in profitto) ma la loro forza sta tornando: il mercato si sta svegliando."],
+  "0d": ["Economiche, ma nessuno compra", "Le altcoin sono a sconto però restano deboli. Di solito conviene aspettare che la forza torni sopra la media a 200 giorni."],
+  "1u": ["Crescita in corso", "Valutazioni nella media e forza positiva: la ripresa si sta allargando."],
+  "1d": ["Mercato incerto", "Valutazioni nella media e forza debole: nessun vantaggio evidente."],
+  "2u": ["Euforia", "Molte altcoin sono già in profitto e continuano a correre. È la fase finale tipica dei rialzi: attenzione."],
+  "2d": ["Probabile fine del ciclo", "Molte altcoin in profitto ma la forza sta calando: chi è in guadagno tende a vendere."]
+};
+function renderOthers(m){
+  const O = D.oth;
+  const set = (id, txt, col) => { $(id).textContent = txt; if (col) $(id).style.color = col; };
+  if (!O || lastVal(O.v)[0] == null){
+    ["oVal", "oMa", "oRel", "oForce"].forEach(id => set(id, "—")); $("oValS").textContent = "dati insufficienti";
+    $("cT").textContent = "—"; $("cD").textContent = "In attesa dei dati."; drawMatrix(null, null); return;
+  }
+  const [v, i] = lastVal(O.v), v30 = valAgo(O.v, i, 30);
+  set("oVal", O.real ? fmtBig(v) : v.toFixed(0));
+  $("oValS").innerHTML = (v30 ? `<span class="${v >= v30 ? "up" : "down"}">${v >= v30 ? "▲" : "▼"} ${Math.abs((v / v30 - 1) * 100).toFixed(1)}%</span> in 30g · ` : "") + `${O.n} coin`;
+  const ma = O.ma[i];
+  if (ma){ const dd = (v / ma - 1) * 100; set("oMa", (dd >= 0 ? "+" : "") + dd.toFixed(1) + "%", dd >= 0 ? "var(--good)" : "var(--bad)"); $("oMaS").textContent = dd >= 0 ? "sopra la media a 200 giorni" : "sotto la media a 200 giorni"; }
+  else { set("oMa", "—"); $("oMaS").textContent = "servono 200 giorni di dati"; }
+  const [rv, ri] = lastVal(O.rel), rma = O.relMa[ri];
+  if (rma){ const dr = (rv / rma - 1) * 100; set("oRel", (dr >= 0 ? "+" : "") + dr.toFixed(1) + "%", dr >= 0 ? "var(--good)" : "var(--bad)"); $("oRelS").textContent = dr >= 0 ? "alt piccole più forti di BTC (vs MA200)" : "BTC più forte delle alt piccole (vs MA200)"; }
+  else { set("oRel", "—"); $("oRelS").textContent = "servono 200 giorni di dati"; }
+  const f = forceOf(O);
+  if (f){ set("oForce", f.t, f.c); $("oForceS").textContent = f.d; } else { set("oForce", "—"); $("oForceS").textContent = "dati insufficienti"; }
+  const vb = valueBand(m);
+  if (vb != null && f){ const [t, d] = READ[vb + (f.up ? "u" : "d")]; $("cT").textContent = t; $("cD").textContent = d; }
+  drawMatrix(vb, f);
+  drawOthCharts();
+}
+function drawMatrix(vb, f){
+  const cols = ["A sconto<br>&lt;40%", "Nella media<br>40–60%", "Care<br>&gt;60%"];
+  const cell = (b, up) => `<div class="c${vb === b && f && f.up === up ? " on" : ""}">${READ[b + (up ? "u" : "d")][0]}</div>`;
+  $("matrix").innerHTML = `<div></div>${cols.map(c => `<div class="h">${c}</div>`).join("")}` +
+    `<div class="r">Forza ▲</div>${[0, 1, 2].map(b => cell(b, true)).join("")}` +
+    `<div class="r">Forza ▼</div>${[0, 1, 2].map(b => cell(b, false)).join("")}`;
+}
+let chOth = null, chRel = null;
+function lineChart(prev, id, labels, sets, logY, fmtY){
+  if (prev) prev.destroy();
+  return new Chart($(id).getContext("2d"), {
+    type: "line", data: {labels, datasets: sets.map(d => Object.assign({pointRadius: 0, pointHoverRadius: 3, tension: .15, spanGaps: true}, d))},
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false, interaction: {mode: "index", intersect: false},
+      plugins: {
+        legend: {labels: {color: "#aab4c3", boxWidth: 12, boxHeight: 2, font: {family: "IBM Plex Sans", size: 12}}},
+        tooltip: {backgroundColor: "#0a0e14", borderColor: "#263142", borderWidth: 1, titleFont: {family: "JetBrains Mono"}, bodyFont: {family: "JetBrains Mono"},
+          callbacks: {title: it => fmtDate(it[0].label), label: it => ` ${it.dataset.label}: ${it.raw == null ? "—" : fmtY(it.raw)}`}}
+      },
+      scales: {
+        x: {ticks: {color: "#5d6878", maxTicksLimit: 6, font: {family: "JetBrains Mono", size: 11}, callback(v){ return new Date(this.getLabelForValue(v)).toLocaleDateString("it-IT", {month: "short", year: "2-digit"}); }}, grid: {color: "rgba(255,255,255,.03)"}},
+        y: {type: logY ? "logarithmic" : "linear", ticks: {color: "#5d6878", maxTicksLimit: 5, font: {family: "JetBrains Mono", size: 11}, callback: v => fmtY(v)}, grid: {color: "rgba(255,255,255,.05)"}}
+      }
+    }
+  });
+}
+function drawOthCharts(){
+  const O = D.oth, s = sliceRange(), labels = D.dates.slice(s);
+  const fY = O.real ? (v => fmtBig(v)) : (v => (+v).toFixed(0));
+  chOth = lineChart(chOth, "chOth", labels, [
+    {label: "OTHERS", data: O.v.slice(s), borderColor: "#35d4c7", borderWidth: 2},
+    {label: "Media 200g", data: O.ma.slice(s), borderColor: "rgba(201,210,222,.7)", borderWidth: 1.2, borderDash: [5, 4]}
+  ], true, fY);
+  chRel = lineChart(chRel, "chRel", labels, [
+    {label: "OTHERS / BTC", data: O.rel.slice(s), borderColor: "#a78bfa", borderWidth: 2},
+    {label: "Media 200g", data: O.relMa.slice(s), borderColor: "rgba(201,210,222,.7)", borderWidth: 1.2, borderDash: [5, 4]}
+  ], false, v => (+v).toFixed(0));
+}
 function sliceRange(){
   let start = D.dates.findIndex((_, k) => D.med[k] != null);
   if (start < 0) start = 0;
@@ -681,7 +862,7 @@ $("gateForm").addEventListener("submit", async e => {
   else { $("gateErr").textContent = "Password errata. Riprova."; $("gatePw").select(); }
 });
 $("lock").addEventListener("click", () => {
-  try { localStorage.removeItem("ra_auth"); localStorage.removeItem("ra_cache_v1"); } catch {}
+  try { localStorage.removeItem("ra_auth"); localStorage.removeItem("ra_cache_v1"); localStorage.removeItem("ra_cache_v2"); } catch {}
   location.reload();
 });
 if (store.get("ra_auth", null) === PW_HASH) start();
