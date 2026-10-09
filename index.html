@@ -843,7 +843,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && D 
 
 /* ---------- access gate ---------- */
 // SHA-256 of the password. To change it, replace this hash.
-const PW_HASH = "a85b2375d295df2bf43be6bfdb2e97b01e0ce54a32d3afce1e222ff9f9657b96";
+const PW_HASH = "4fa7aa6cf678761eb07233ec7a6097d1e3124c6e6ae6171fccbcd4b34f5c73e0";
 async function sha256(t){
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
   return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
