@@ -424,6 +424,18 @@ html[data-tema="chiaro"] .gate input{ background:#FFFFFF; border-color:rgba(15,2
 html[data-tema="chiaro"] .gate input:focus{ border-color:#6E4FC0; box-shadow:0 0 0 3px rgba(110,79,192,.15); }
 html[data-tema="chiaro"] .gauge .mk{ background:var(--text); }
 html[data-tema="chiaro"] .studio img, html[data-tema="chiaro"] .gate img, html[data-tema="chiaro"] footer .by img{ filter:invert(1); }
+
+/* ===== Rifiniture (17/11/2026): sul computer l'app riempie la finestra; su iPhone niente ingrandimento nei campi ===== */
+.wrap{ max-width:none; }
+@media (min-width:1000px){ body{ padding-left:max(28px, env(safe-area-inset-left, 0px)); padding-right:max(28px, env(safe-area-inset-right, 0px)); } }
+@media (min-width:1500px){
+  .wrap{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:18px 20px; align-items:start; }
+  .wrap > *{ grid-column:1 / -1; min-width:0; }
+  .wrap > .panel:has(#chart), .wrap > .panel:has(#heat){ grid-column:auto; align-self:stretch; }
+  .chartbox{ height:clamp(320px, 30vw, 520px); }
+  .kpi .v{ font-size:30px; }
+}
+@media (hover:none) and (pointer:coarse){ input, select{ font-size:16px !important; } }
 </style>
 
 </head>
