@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
+<script>/* tema scelto (predefinito scuro) */try{if(localStorage.getItem("as_tema")==="chiaro"){document.documentElement.dataset.tema="chiaro";document.querySelector('meta[name="theme-color"]').content="#F3F4F6";}}catch(e){}</script>
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="googlebot" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -385,6 +386,44 @@ td{ border-bottom-color:rgba(255,255,255,.05); }
 .gate input:focus{ outline:none; border-color:rgba(183,155,235,.7); box-shadow:0 0 0 3px rgba(183,155,235,.2); }
 .gate button{ border-radius:999px; background:var(--alt); border-color:var(--alt); color:#05070a; font-weight:600; min-height:44px; box-shadow:0 0 22px rgba(183,155,235,.3); }
 @media (prefers-reduced-motion:reduce){ button{ transition:none; } }
+
+/* ===== Tema chiaro (16/11/2026): a scelta, predefinito scuro (DESIGN.md > Tema chiaro) ===== */
+.tema{ width:36px; padding:0; display:inline-grid; place-items:center; }
+.tema svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.tema .luna{ display:none; }
+html[data-tema="chiaro"] .tema .luna{ display:inline; }
+html[data-tema="chiaro"] .tema .sole{ display:none; }
+html[data-tema="chiaro"]{ color-scheme:light;
+  --bg:#F3F4F6; --surface:#FFFFFF; --surface2:#FFFFFF; --line:rgba(15,23,42,.08); --line2:#D9DDE3;
+  --text:#0E1116; --muted:#5B6472; --faint:#8A93A1;
+  --alt:#6E4FC0; --alt-soft:#EEE8FA; --cyan:#1F78B4; --price:#4B5563; --btc:#D9770F;
+  --good:#0E9F63; --warn:#A8700F; --bad:#D93A2B;
+  --es-risalto:linear-gradient(170deg, #FFFFFF, #FAFBFC); --es-luce:inset 0 1px 0 rgba(255,255,255,.9); }
+html[data-tema="chiaro"] body{ background:radial-gradient(1200px 500px at 80% -10%, rgba(110,79,192,.06), transparent 60%), var(--bg); }
+html[data-tema="chiaro"] ::selection{ background:rgba(110,79,192,.2); }
+html[data-tema="chiaro"] button:hover{ border-color:#B8BEC8; }
+html[data-tema="chiaro"] #refresh, html[data-tema="chiaro"] .gate button{ color:#FFFFFF; box-shadow:0 8px 18px rgba(110,79,192,.25); }
+html[data-tema="chiaro"] #refresh:hover{ background:#5C40AD; }
+html[data-tema="chiaro"] .lock, html[data-tema="chiaro"] .pill{ background:#FFFFFF; }
+html[data-tema="chiaro"] .seg button{ border-color:rgba(15,23,42,.1); }
+html[data-tema="chiaro"] .seg button[aria-pressed="true"]{ color:#FFFFFF; }
+html[data-tema="chiaro"] .kpi, html[data-tema="chiaro"] .panel{ box-shadow:0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.05); }
+html[data-tema="chiaro"] .panel .kpis .kpi{ background:#FAFBFC; box-shadow:none; }
+html[data-tema="chiaro"] .regime, html[data-tema="chiaro"] .gate form{ border-color:rgba(15,23,42,.08); box-shadow:0 1px 2px rgba(15,23,42,.04), 0 10px 30px rgba(15,23,42,.07); }
+html[data-tema="chiaro"] .regime::after, html[data-tema="chiaro"] .gate form::before{ opacity:.25; }
+html[data-tema="chiaro"] .matrix .c{ background:#FAFBFC; }
+html[data-tema="chiaro"] .matrix .c.on{ box-shadow:0 0 0 1px var(--alt) inset, 0 6px 16px rgba(110,79,192,.15); }
+html[data-tema="chiaro"] .progress{ background:rgba(15,23,42,.08); }
+html[data-tema="chiaro"] .tip{ background:#0E1116; color:#FFFFFF; }
+html[data-tema="chiaro"] th{ background:#FFFFFF; }
+html[data-tema="chiaro"] td{ border-bottom-color:rgba(15,23,42,.06); }
+html[data-tema="chiaro"] .chip.y{ border-color:rgba(14,159,99,.35); }
+html[data-tema="chiaro"] .err-box{ border-color:rgba(217,58,43,.35); background:#FDE8E5; color:#9B2418; }
+html[data-tema="chiaro"] .gate{ background:var(--bg); }
+html[data-tema="chiaro"] .gate input{ background:#FFFFFF; border-color:rgba(15,23,42,.12); color:var(--text); }
+html[data-tema="chiaro"] .gate input:focus{ border-color:#6E4FC0; box-shadow:0 0 0 3px rgba(110,79,192,.15); }
+html[data-tema="chiaro"] .gauge .mk{ background:var(--text); }
+html[data-tema="chiaro"] .studio img, html[data-tema="chiaro"] .gate img, html[data-tema="chiaro"] footer .by img{ filter:invert(1); }
 </style>
 
 </head>
@@ -417,6 +456,7 @@ td{ border-bottom-color:rgba(255,255,255,.05); }
   <div class="status">
     <span class="pill" id="pill"><span class="dot"></span><span id="pillTxt">avvio…</span></span>
     <button id="refresh" type="button">Aggiorna</button>
+    <button id="tema" class="lock tema" type="button" aria-label="Cambia tema: chiaro o scuro" title="Tema chiaro o scuro"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="luna" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/><g class="sole"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg></button>
     <button id="lock" class="lock" type="button" title="Esci">Esci</button>
   </div>
 </header>
@@ -902,6 +942,11 @@ function drawMatrix(vb, f){
     `<div class="r">Forza ▼</div>${[0, 1, 2].map(b => cell(b, false)).join("")}`;
 }
 let chOth = null, chRel = null;
+const C = () => document.documentElement.dataset.tema === "chiaro"
+  ? {legenda: "#5B6472", fumetto: "#0E1116", fumettoTesto: "#FFFFFF", assi: "#6B7280", griglia: "rgba(15,23,42,.07)", griglia2: "rgba(15,23,42,.05)",
+     ciano: "#1F78B4", viola: "#6E4FC0", viola2: "#8B6BD9", grigio: "rgba(55,65,81,.55)", btc: "#D9770F", area: "rgba(110,79,192,.18)", area0: "rgba(110,79,192,0)", fondoMappa: "#EEF0F3"}
+  : {legenda: "#8A93A1", fumetto: "#E9ECF1", fumettoTesto: "#05070a", assi: "#5C6470", griglia: "rgba(255,255,255,.05)", griglia2: "rgba(255,255,255,.03)",
+     ciano: "#8FD3FF", viola: "#B79BEB", viola2: "#a78bfa", grigio: "rgba(201,210,222,.7)", btc: "#f7931a", area: "rgba(183,155,235,.28)", area0: "rgba(183,155,235,0)", fondoMappa: "#0a0d12"};
 function lineChart(prev, id, labels, sets, logY, fmtY){
   if (prev) prev.destroy();
   return new Chart($(id).getContext("2d"), {
@@ -909,13 +954,13 @@ function lineChart(prev, id, labels, sets, logY, fmtY){
     options: {
       responsive: true, maintainAspectRatio: false, animation: false, interaction: {mode: "index", intersect: false},
       plugins: {
-        legend: {labels: {color: "#8A93A1", boxWidth: 12, boxHeight: 2, font: {family: "IBM Plex Sans", size: 12}}},
-        tooltip: {backgroundColor: "#E9ECF1", titleColor: "#05070a", bodyColor: "#05070a", borderWidth: 0, cornerRadius: 14, padding: {x: 12, y: 8}, caretSize: 0, titleFont: {family: "IBM Plex Mono"}, bodyFont: {family: "IBM Plex Mono"},
+        legend: {labels: {color: C().legenda, boxWidth: 12, boxHeight: 2, font: {family: "IBM Plex Sans", size: 12}}},
+        tooltip: {backgroundColor: C().fumetto, titleColor: C().fumettoTesto, bodyColor: C().fumettoTesto, borderWidth: 0, cornerRadius: 14, padding: {x: 12, y: 8}, caretSize: 0, titleFont: {family: "IBM Plex Mono"}, bodyFont: {family: "IBM Plex Mono"},
           callbacks: {title: it => fmtDate(it[0].label), label: it => ` ${it.dataset.label}: ${it.raw == null ? "—" : fmtY(it.raw)}`}}
       },
       scales: {
-        x: {ticks: {color: "#5C6470", maxTicksLimit: 6, font: {family: "IBM Plex Mono", size: 11}, callback(v){ return new Date(this.getLabelForValue(v)).toLocaleDateString("it-IT", {month: "short", year: "2-digit"}); }}, grid: {color: "rgba(255,255,255,.03)"}},
-        y: {type: logY ? "logarithmic" : "linear", ticks: {color: "#5C6470", maxTicksLimit: 5, font: {family: "IBM Plex Mono", size: 11}, callback: v => fmtY(v)}, grid: {color: "rgba(255,255,255,.05)"}}
+        x: {ticks: {color: C().assi, maxTicksLimit: 6, font: {family: "IBM Plex Mono", size: 11}, callback(v){ return new Date(this.getLabelForValue(v)).toLocaleDateString("it-IT", {month: "short", year: "2-digit"}); }}, grid: {color: C().griglia2}},
+        y: {type: logY ? "logarithmic" : "linear", ticks: {color: C().assi, maxTicksLimit: 5, font: {family: "IBM Plex Mono", size: 11}, callback: v => fmtY(v)}, grid: {color: C().griglia}}
       }
     }
   });
@@ -924,12 +969,12 @@ function drawOthCharts(){
   const O = D.oth, s = sliceRange(), labels = D.dates.slice(s);
   const fY = O.real ? (v => fmtBig(v)) : (v => (+v).toFixed(0));
   chOth = lineChart(chOth, "chOth", labels, [
-    {label: "OTHERS", data: O.v.slice(s), borderColor: "#8FD3FF", borderWidth: 2},
-    {label: "Media 200g", data: O.ma.slice(s), borderColor: "rgba(201,210,222,.7)", borderWidth: 1.2, borderDash: [5, 4]}
+    {label: "OTHERS", data: O.v.slice(s), borderColor: C().ciano, borderWidth: 2},
+    {label: "Media 200g", data: O.ma.slice(s), borderColor: C().grigio, borderWidth: 1.2, borderDash: [5, 4]}
   ], true, fY);
   chRel = lineChart(chRel, "chRel", labels, [
-    {label: "OTHERS / BTC", data: O.rel.slice(s), borderColor: "#a78bfa", borderWidth: 2},
-    {label: "Media 200g", data: O.relMa.slice(s), borderColor: "rgba(201,210,222,.7)", borderWidth: 1.2, borderDash: [5, 4]}
+    {label: "OTHERS / BTC", data: O.rel.slice(s), borderColor: C().viola2, borderWidth: 2},
+    {label: "Media 200g", data: O.relMa.slice(s), borderColor: C().grigio, borderWidth: 1.2, borderDash: [5, 4]}
   ], false, v => (+v).toFixed(0));
 }
 function sliceRange(){
@@ -955,14 +1000,14 @@ function drawChart(){
   const labels = D.dates.slice(s);
   const ctx = $("chart").getContext("2d");
   const grad = ctx.createLinearGradient(0, 0, 0, 400);
-  grad.addColorStop(0, "rgba(183,155,235,.28)"); grad.addColorStop(1, "rgba(183,155,235,0)");
+  grad.addColorStop(0, C().area); grad.addColorStop(1, C().area0);
   const hidden = chart ? chart.data.datasets.map((_, k) => !chart.isDatasetVisible(k)) : [false, false, true, true, false];
   const ds = [
-    {label: "Mediana alt", data: D.med.slice(s), borderColor: "#B79BEB", backgroundColor: grad, fill: "origin", borderWidth: 2, yAxisID: "y"},
-    {label: "BTC in profitto", data: D.btcP.slice(s), borderColor: "#f7931a", borderWidth: 1.6, yAxisID: "y"},
-    {label: "Alt >50% in profitto", data: D.br.slice(s), borderColor: "#8FD3FF", borderWidth: 1.2, borderDash: [4, 3], yAxisID: "y"},
-    {label: "Alt sopra MA200", data: D.maPct.slice(s), borderColor: "#a78bfa", borderWidth: 1.2, borderDash: [2, 3], yAxisID: "y"},
-    {label: "Prezzo BTC", data: D.btcPrice.slice(s), borderColor: "rgba(201,210,222,.75)", borderWidth: 1.1, yAxisID: "y1"}
+    {label: "Mediana alt", data: D.med.slice(s), borderColor: C().viola, backgroundColor: grad, fill: "origin", borderWidth: 2, yAxisID: "y"},
+    {label: "BTC in profitto", data: D.btcP.slice(s), borderColor: C().btc, borderWidth: 1.6, yAxisID: "y"},
+    {label: "Alt >50% in profitto", data: D.br.slice(s), borderColor: C().ciano, borderWidth: 1.2, borderDash: [4, 3], yAxisID: "y"},
+    {label: "Alt sopra MA200", data: D.maPct.slice(s), borderColor: C().viola2, borderWidth: 1.2, borderDash: [2, 3], yAxisID: "y"},
+    {label: "Prezzo BTC", data: D.btcPrice.slice(s), borderColor: C().grigio, borderWidth: 1.1, yAxisID: "y1"}
   ].map((d, k) => Object.assign({pointRadius: 0, pointHoverRadius: 3, tension: .15, spanGaps: true, hidden: hidden[k]}, d));
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
@@ -971,14 +1016,14 @@ function drawChart(){
       responsive: true, maintainAspectRatio: false, animation: false,
       interaction: {mode: "index", intersect: false},
       plugins: {
-        legend: {labels: {color: "#8A93A1", boxWidth: 12, boxHeight: 2, font: {family: "IBM Plex Sans", size: 12}}},
-        tooltip: {backgroundColor: "#E9ECF1", titleColor: "#05070a", bodyColor: "#05070a", borderWidth: 0, cornerRadius: 14, padding: {x: 12, y: 8}, caretSize: 0, titleFont: {family: "IBM Plex Mono"}, bodyFont: {family: "IBM Plex Mono"},
+        legend: {labels: {color: C().legenda, boxWidth: 12, boxHeight: 2, font: {family: "IBM Plex Sans", size: 12}}},
+        tooltip: {backgroundColor: C().fumetto, titleColor: C().fumettoTesto, bodyColor: C().fumettoTesto, borderWidth: 0, cornerRadius: 14, padding: {x: 12, y: 8}, caretSize: 0, titleFont: {family: "IBM Plex Mono"}, bodyFont: {family: "IBM Plex Mono"},
           callbacks: {title: it => fmtDate(it[0].label), label: it => ` ${it.dataset.label}: ${it.dataset.yAxisID === "y1" ? fmtPrice(it.raw) : it.raw == null ? "—" : it.raw.toFixed(1) + "%"}`}}
       },
       scales: {
-        x: {ticks: {color: "#5C6470", maxTicksLimit: 7, font: {family: "IBM Plex Mono", size: 11}, callback(v){ return new Date(this.getLabelForValue(v)).toLocaleDateString("it-IT", {month: "short", year: "2-digit"}); }}, grid: {color: "rgba(255,255,255,.03)"}},
-        y: {min: 0, max: 100, ticks: {color: "#5C6470", stepSize: 25, callback: v => v + "%", font: {family: "IBM Plex Mono", size: 11}}, grid: {color: "rgba(255,255,255,.05)"}},
-        y1: {type: "logarithmic", position: "right", ticks: {color: "#5C6470", maxTicksLimit: 5, callback: v => "$" + (v >= 1000 ? Math.round(v / 1000) + "k" : v), font: {family: "IBM Plex Mono", size: 11}}, grid: {display: false}}
+        x: {ticks: {color: C().assi, maxTicksLimit: 7, font: {family: "IBM Plex Mono", size: 11}, callback(v){ return new Date(this.getLabelForValue(v)).toLocaleDateString("it-IT", {month: "short", year: "2-digit"}); }}, grid: {color: C().griglia2}},
+        y: {min: 0, max: 100, ticks: {color: C().assi, stepSize: 25, callback: v => v + "%", font: {family: "IBM Plex Mono", size: 11}}, grid: {color: C().griglia}},
+        y1: {type: "logarithmic", position: "right", ticks: {color: C().assi, maxTicksLimit: 5, callback: v => "$" + (v >= 1000 ? Math.round(v / 1000) + "k" : v), font: {family: "IBM Plex Mono", size: 11}}, grid: {display: false}}
       }
     }
   });
@@ -1005,7 +1050,7 @@ function drawHeat(){
   const dpr = window.devicePixelRatio || 1;
   cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.height = H + "px";
   const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  c.fillStyle = "#0a0d12"; c.fillRect(0, 0, W, H);
+  c.fillStyle = C().fondoMappa; c.fillRect(0, 0, W, H);
   const cw = W / cols;
   rows.forEach((r, ri) => {
     for (let k = 0; k < cols; k++){
@@ -1086,6 +1131,16 @@ $("gateForm").addEventListener("submit", async e => {
   const h = await sha256($("gatePw").value.trim());
   if (h === PW_HASH){ store.set("ra_auth", h); $("gateErr").textContent = ""; start(); }
   else { $("gateErr").textContent = "Password errata. Riprova."; $("gatePw").select(); }
+});
+$("tema").addEventListener("click", () => {
+  const cambia = () => {
+    const chiaro = document.documentElement.dataset.tema !== "chiaro";
+    if (chiaro) document.documentElement.dataset.tema = "chiaro"; else delete document.documentElement.dataset.tema;
+    try { localStorage.setItem("as_tema", chiaro ? "chiaro" : "scuro"); } catch (e) {}
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = chiaro ? "#F3F4F6" : "#000000";
+    if (D) render();
+  };
+  if (window.EsMovimento) EsMovimento.cambioPagina(cambia); else cambia();
 });
 $("lock").addEventListener("click", () => {
   try { localStorage.removeItem("ra_auth"); localStorage.removeItem("ra_cache_v1"); localStorage.removeItem("ra_cache_v2"); } catch {}
