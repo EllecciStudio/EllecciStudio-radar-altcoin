@@ -60,8 +60,8 @@
   function formatta(n, x){
     var a = Math.abs(x).toFixed(n.dec).split('.'), i = a[0];
     if (n.raggruppa) i = i.replace(/\B(?=(\d{3})+(?!\d))/g, n.gsep);
-    var s = i + (n.dec ? n.dsep + a[1] : '');
-    return n.pre + (x < 0 ? n.meno : (n.piu ? '+' : '')) + s + n.suf;
+    var s = i + (n.dec ? n.dsep + a[1] : ''), zero = !/[1-9]/.test(s);
+    return n.pre + (x < 0 && !zero ? n.meno : (n.piu ? '+' : '')) + s + n.suf;
   }
 
   function cascata(blocchi){
