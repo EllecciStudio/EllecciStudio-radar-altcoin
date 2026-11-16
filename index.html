@@ -436,6 +436,20 @@ html[data-tema="chiaro"] .studio img, html[data-tema="chiaro"] .gate img, html[d
   .kpi .v{ font-size:30px; }
 }
 @media (hover:none) and (pointer:coarse){ input, select{ font-size:16px !important; } }
+/* numeri grandi in Unbounded come nelle altre app Ellecci */
+.kpi .v{ font:600 22px/1.15 var(--display); letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+@media (min-width:1500px){ .kpi .v{ font-size:26px; } }
+/* telefono: stato su una riga, pulsanti allineati sotto (prima "Esci" finiva da solo a capo) */
+@media (max-width:720px){
+  .status{ width:100%; gap:8px; }
+  .status .pill{ flex:1 1 100%; justify-content:center; }
+  .status #refresh{ flex:1 1 auto; min-height:44px; }
+  .status .lock{ min-height:44px; min-width:44px; }
+  .seg button{ min-height:38px; }
+  .controls{ gap:12px; }
+  .ctl{ width:100%; justify-content:space-between; }
+}
+
 </style>
 
 </head>
