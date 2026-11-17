@@ -450,6 +450,10 @@ html[data-tema="chiaro"] .studio img, html[data-tema="chiaro"] .gate img, html[d
   .ctl{ width:100%; justify-content:space-between; }
 }
 
+
+/* revisione 17/11/2026: riquadri della matrice senza parole che toccano il bordo */
+.matrix .c{ font-size:11px; padding:8px 4px; overflow-wrap:anywhere; hyphens:auto; }
+@media (max-width:480px){ .matrix .c{ font-size:10.5px; } }
 </style>
 
 </head>
@@ -639,7 +643,10 @@ const WRAPPED = new Set(["WBTC","WETH","STETH","WSTETH","WEETH","CBBTC","BTCB","
 const $ = id => document.getElementById(id);
 const pill = $("pill"), pillTxt = $("pillTxt"), prog = $("prog"), errBox = $("errBox");
 const setStatus = (cls, txt) => { pill.className = "pill " + cls; pillTxt.textContent = txt; };
-const fmtPct = v => v == null || isNaN(v) ? "—" : v.toFixed(1) + "%";
+try { Chart.defaults.font.family = "'IBM Plex Sans', system-ui, sans-serif"; } catch (e) { }
+// numeri con la virgola (17/11/2026: prima 70.3% accanto a $59,97)
+const dc = (v, d = 1) => (+v).toFixed(d).replace(".", ",");
+const fmtPct = v => v == null || isNaN(v) ? "—" : dc(v) + "%";
 const fmtPrice = v => v >= 1000 ? "$" + v.toLocaleString("it-IT", {maximumFractionDigits:0})
   : v >= 1 ? "$" + v.toLocaleString("it-IT", {maximumFractionDigits:2})
   : "$" + v.toPrecision(3);
@@ -889,7 +896,7 @@ function valAgo(a, i, n){ const j = i - n; return j >= 0 ? a[j] : null; }
 function delta(now, then){
   if (now == null || then == null) return "—";
   const d = now - then, c = d >= 0 ? "up" : "down";
-  return `<span class="${c}">${d >= 0 ? "▲" : "▼"} ${Math.abs(d).toFixed(1)}</span> in 30g`;
+  return `<span class="${c}">${d >= 0 ? "▲" : "▼"} ${dc(Math.abs(d))}</span> in 30g`;
 }
 
 let entrato = false;
@@ -899,7 +906,7 @@ function render(){
   $("kMed").textContent = fmtPct(m); $("kMedS").innerHTML = delta(m, valAgo(D.med, i, 30));
   $("kBtc").textContent = fmtPct(b); $("kBtcS").innerHTML = delta(b, valAgo(D.btcP, ib, 30));
   const gap = m != null && b != null ? b - m : null;
-  $("kGap").textContent = gap == null ? "—" : (gap >= 0 ? "+" : "") + gap.toFixed(1);
+  $("kGap").textContent = gap == null ? "—" : (gap >= 0 ? "+" : "") + dc(gap);
   $("kGap").style.color = gap > 30 ? "var(--btc)" : "var(--text)";
   $("kGapS").textContent = gap == null ? "" : gap > 30 ? "BTC molto più forte delle alt" : gap > 10 ? "BTC più forte delle alt" : "alt allineate a BTC";
   $("kBr").textContent = fmtPct(brv); $("kBrS").innerHTML = delta(brv, valAgo(D.br, ibr, 30));
@@ -946,12 +953,12 @@ function renderOthers(m){
   }
   const [v, i] = lastVal(O.v), v30 = valAgo(O.v, i, 30);
   set("oVal", O.real ? fmtBig(v) : v.toFixed(0));
-  $("oValS").innerHTML = (v30 ? `<span class="${v >= v30 ? "up" : "down"}">${v >= v30 ? "▲" : "▼"} ${Math.abs((v / v30 - 1) * 100).toFixed(1)}%</span> in 30g · ` : "") + `${O.n} coin`;
+  $("oValS").innerHTML = (v30 ? `<span class="${v >= v30 ? "up" : "down"}">${v >= v30 ? "▲" : "▼"} ${dc(Math.abs((v / v30 - 1) * 100))}%</span> in 30g · ` : "") + `${O.n} coin`;
   const ma = O.ma[i];
-  if (ma){ const dd = (v / ma - 1) * 100; set("oMa", (dd >= 0 ? "+" : "") + dd.toFixed(1) + "%", dd >= 0 ? "var(--good)" : "var(--bad)"); $("oMaS").textContent = dd >= 0 ? "sopra la media a 200 giorni" : "sotto la media a 200 giorni"; }
+  if (ma){ const dd = (v / ma - 1) * 100; set("oMa", (dd >= 0 ? "+" : "") + dc(dd) + "%", dd >= 0 ? "var(--good)" : "var(--bad)"); $("oMaS").textContent = dd >= 0 ? "sopra la media a 200 giorni" : "sotto la media a 200 giorni"; }
   else { set("oMa", "—"); $("oMaS").textContent = "servono 200 giorni di dati"; }
   const [rv, ri] = lastVal(O.rel), rma = O.relMa[ri];
-  if (rma){ const dr = (rv / rma - 1) * 100; set("oRel", (dr >= 0 ? "+" : "") + dr.toFixed(1) + "%", dr >= 0 ? "var(--good)" : "var(--bad)"); $("oRelS").textContent = dr >= 0 ? "alt piccole più forti di BTC (vs MA200)" : "BTC più forte delle alt piccole (vs MA200)"; }
+  if (rma){ const dr = (rv / rma - 1) * 100; set("oRel", (dr >= 0 ? "+" : "") + dc(dr) + "%", dr >= 0 ? "var(--good)" : "var(--bad)"); $("oRelS").textContent = dr >= 0 ? "alt piccole più forti di BTC (vs MA200)" : "BTC più forte delle alt piccole (vs MA200)"; }
   else { set("oRel", "—"); $("oRelS").textContent = "servono 200 giorni di dati"; }
   const f = forceOf(O);
   if (f){ set("oForce", f.t, f.c); $("oForceS").textContent = f.d; } else { set("oForce", "—"); $("oForceS").textContent = "dati insufficienti"; }
@@ -980,13 +987,13 @@ function lineChart(prev, id, labels, sets, logY, fmtY){
     options: {
       responsive: true, maintainAspectRatio: false, animation: false, interaction: {mode: "index", intersect: false},
       plugins: {
-        legend: {labels: {color: C().legenda, boxWidth: 12, boxHeight: 2, font: {family: "IBM Plex Sans", size: 12}}},
-        tooltip: {backgroundColor: C().fumetto, titleColor: C().fumettoTesto, bodyColor: C().fumettoTesto, borderWidth: 0, cornerRadius: 14, padding: {x: 12, y: 8}, caretSize: 0, titleFont: {family: "IBM Plex Mono"}, bodyFont: {family: "IBM Plex Mono"},
+        legend: {labels: {color: C().legenda, boxWidth: 12, boxHeight: 2, font: {family: "'IBM Plex Sans', system-ui, sans-serif", size: 12}}},
+        tooltip: {backgroundColor: C().fumetto, titleColor: C().fumettoTesto, bodyColor: C().fumettoTesto, borderWidth: 0, cornerRadius: 14, padding: {x: 12, y: 8}, caretSize: 0, titleFont: {family: "'IBM Plex Mono', ui-monospace, monospace"}, bodyFont: {family: "'IBM Plex Mono', ui-monospace, monospace"},
           callbacks: {title: it => fmtDate(it[0].label), label: it => ` ${it.dataset.label}: ${it.raw == null ? "—" : fmtY(it.raw)}`}}
       },
       scales: {
-        x: {ticks: {color: C().assi, maxTicksLimit: 6, font: {family: "IBM Plex Mono", size: 11}, callback(v){ return new Date(this.getLabelForValue(v)).toLocaleDateString("it-IT", {month: "short", year: "2-digit"}); }}, grid: {color: C().griglia2}},
-        y: {type: logY ? "logarithmic" : "linear", ticks: {color: C().assi, maxTicksLimit: 5, font: {family: "IBM Plex Mono", size: 11}, callback: v => fmtY(v)}, grid: {color: C().griglia}}
+        x: {ticks: {color: C().assi, maxRotation: 0, autoSkipPadding: 12, maxTicksLimit: 6, font: {family: "'IBM Plex Mono', ui-monospace, monospace", size: 11}, callback(v){ return new Date(this.getLabelForValue(v)).toLocaleDateString("it-IT", {month: "short", year: "2-digit"}); }}, grid: {color: C().griglia2}},
+        y: {type: logY ? "logarithmic" : "linear", ticks: {color: C().assi, maxTicksLimit: 5, font: {family: "'IBM Plex Mono', ui-monospace, monospace", size: 11}, callback: v => fmtY(v)}, grid: {color: C().griglia}}
       }
     }
   });
@@ -1042,14 +1049,14 @@ function drawChart(){
       responsive: true, maintainAspectRatio: false, animation: false,
       interaction: {mode: "index", intersect: false},
       plugins: {
-        legend: {labels: {color: C().legenda, boxWidth: 12, boxHeight: 2, font: {family: "IBM Plex Sans", size: 12}}},
-        tooltip: {backgroundColor: C().fumetto, titleColor: C().fumettoTesto, bodyColor: C().fumettoTesto, borderWidth: 0, cornerRadius: 14, padding: {x: 12, y: 8}, caretSize: 0, titleFont: {family: "IBM Plex Mono"}, bodyFont: {family: "IBM Plex Mono"},
-          callbacks: {title: it => fmtDate(it[0].label), label: it => ` ${it.dataset.label}: ${it.dataset.yAxisID === "y1" ? fmtPrice(it.raw) : it.raw == null ? "—" : it.raw.toFixed(1) + "%"}`}}
+        legend: {labels: {color: C().legenda, boxWidth: 12, boxHeight: 2, font: {family: "'IBM Plex Sans', system-ui, sans-serif", size: 12}}},
+        tooltip: {backgroundColor: C().fumetto, titleColor: C().fumettoTesto, bodyColor: C().fumettoTesto, borderWidth: 0, cornerRadius: 14, padding: {x: 12, y: 8}, caretSize: 0, titleFont: {family: "'IBM Plex Mono', ui-monospace, monospace"}, bodyFont: {family: "'IBM Plex Mono', ui-monospace, monospace"},
+          callbacks: {title: it => fmtDate(it[0].label), label: it => ` ${it.dataset.label}: ${it.dataset.yAxisID === "y1" ? fmtPrice(it.raw) : it.raw == null ? "—" : dc(it.raw) + "%"}`}}
       },
       scales: {
-        x: {ticks: {color: C().assi, maxTicksLimit: 7, font: {family: "IBM Plex Mono", size: 11}, callback(v){ return new Date(this.getLabelForValue(v)).toLocaleDateString("it-IT", {month: "short", year: "2-digit"}); }}, grid: {color: C().griglia2}},
-        y: {min: 0, max: 100, ticks: {color: C().assi, stepSize: 25, callback: v => v + "%", font: {family: "IBM Plex Mono", size: 11}}, grid: {color: C().griglia}},
-        y1: {type: "logarithmic", position: "right", ticks: {color: C().assi, maxTicksLimit: 5, callback: v => "$" + (v >= 1000 ? Math.round(v / 1000) + "k" : v), font: {family: "IBM Plex Mono", size: 11}}, grid: {display: false}}
+        x: {ticks: {color: C().assi, maxRotation: 0, autoSkipPadding: 12, maxTicksLimit: 7, font: {family: "'IBM Plex Mono', ui-monospace, monospace", size: 11}, callback(v){ return new Date(this.getLabelForValue(v)).toLocaleDateString("it-IT", {month: "short", year: "2-digit"}); }}, grid: {color: C().griglia2}},
+        y: {min: 0, max: 100, ticks: {color: C().assi, stepSize: 25, callback: v => v + "%", font: {family: "'IBM Plex Mono', ui-monospace, monospace", size: 11}}, grid: {color: C().griglia}},
+        y1: {type: "logarithmic", position: "right", ticks: {color: C().assi, maxTicksLimit: 5, callback: v => "$" + (v >= 1000 ? Math.round(v / 1000) + "k" : v), font: {family: "'IBM Plex Mono', ui-monospace, monospace", size: 11}}, grid: {display: false}}
       }
     }
   });
@@ -1086,7 +1093,7 @@ function drawHeat(){
   });
   heatMeta = {rows, s, cols, cw, rowH};
   const ax = $("heatAxis"); ax.innerHTML = "";
-  for (let q = 0; q <= 4; q++){ const idx = s + Math.min(cols - 1, Math.round(q * (cols - 1) / 4)); const sp = document.createElement("span"); sp.textContent = fmtDate(D.dates[idx]); ax.appendChild(sp); }
+  for (let q = 0; q <= 4; q++){ const idx = s + Math.min(cols - 1, Math.round(q * (cols - 1) / 4)); const sp = document.createElement("span"); sp.textContent = new Date(D.dates[idx]).toLocaleDateString("it-IT", { month: "short", year: "2-digit" }); ax.appendChild(sp); }
 }
 (function heatHover(){
   const cv = $("heat"), tip = $("tip");
@@ -1097,7 +1104,7 @@ function drawHeat(){
     const col = Math.floor(x / heatMeta.cw), row = Math.floor(y / heatMeta.rowH);
     const coin = heatMeta.rows[row]; if (!coin || col < 0 || col >= heatMeta.cols){ tip.hidden = true; return; }
     const v = coin.vals[heatMeta.s + col];
-    tip.innerHTML = `<b>#${coin.rank} ${coin.sym}</b> · ${fmtDate(D.dates[heatMeta.s + col])}<br>in profitto: ${v == null ? "n/d" : v.toFixed(1) + "%"}`;
+    tip.innerHTML = `<b>#${coin.rank} ${coin.sym}</b> · ${fmtDate(D.dates[heatMeta.s + col])}<br>in profitto: ${v == null ? "n/d" : dc(v) + "%"}`;
     tip.hidden = false;
     const left = Math.min(x, r.width - 190); tip.style.left = left + "px"; tip.style.top = y + "px";
   };
@@ -1123,8 +1130,8 @@ function drawTable(){
     <td class="num">${r.rank === 9999 ? "–" : r.rank}</td>
     <td class="sym">${r.sym}<span>${r.name.length > 18 ? r.name.slice(0, 17) + "…" : r.name}</span></td>
     <td>${fmtPrice(r.price)}</td>
-    <td><span class="bar">${r.p == null ? "—" : r.p.toFixed(1) + "%"}<i><b style="width:${r.p ?? 0}%;background:${heatColor(r.p ?? 0)}"></b></i></span></td>
-    <td class="${r.d30 == null ? "" : r.d30 >= 0 ? "up" : "down"}">${r.d30 == null ? "—" : (r.d30 >= 0 ? "+" : "") + r.d30.toFixed(1)}</td>
+    <td><span class="bar">${r.p == null ? "—" : dc(r.p) + "%"}<i><b style="width:${r.p ?? 0}%;background:${heatColor(r.p ?? 0)}"></b></i></span></td>
+    <td class="${r.d30 == null ? "" : r.d30 >= 0 ? "up" : "down"}">${r.d30 == null ? "—" : (r.d30 >= 0 ? "+" : "") + dc(r.d30)}</td>
     <td class="${r.ath != null && r.ath > -20 ? "up" : ""}">${r.ath == null ? "—" : r.ath.toFixed(0) + "%"}</td>
     <td>${r.ma == null ? "—" : r.ma ? '<span class="chip y">sì</span>' : '<span class="chip n">no</span>'}</td></tr>`).join("");
 }
