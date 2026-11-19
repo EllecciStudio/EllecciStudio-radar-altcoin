@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<script>/* tema scelto (predefinito scuro) */try{if(localStorage.getItem("as_tema")==="chiaro"){document.documentElement.dataset.tema="chiaro";document.querySelector('meta[name="theme-color"]').content="#F3F4F6";}}catch(e){}</script>
+<script>/* tema scelto (predefinito scuro; anche "vetro" dal 19/11/2026) */try{var asT=localStorage.getItem("as_tema");if(asT==="chiaro"||asT==="vetro"){document.documentElement.dataset.tema=asT;document.querySelector('meta[name="theme-color"]').content=asT==="chiaro"?"#F3F4F6":"#06050B";}}catch(e){}</script>
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="googlebot" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -454,6 +454,42 @@ html[data-tema="chiaro"] .studio img, html[data-tema="chiaro"] .gate img, html[d
 /* revisione 17/11/2026: riquadri della matrice senza parole che toccano il bordo */
 .matrix .c{ font-size:11px; padding:8px 4px; overflow-wrap:anywhere; hyphens:auto; }
 @media (max-width:480px){ .matrix .c{ font-size:10.5px; } }
+/* ===== Tema "vetro colorato" (19/11/2026, riferimento rondesignlabs nel secondo cervello): terza scelta del pulsante (scuro → vetro → chiaro).
+   Sfondo di luce viola / azzurra / verde acqua sfocata che si muove piano, schede in vetro tinto che sfocano quello che hanno dietro. ===== */
+html[data-tema="vetro"]{ color-scheme:dark; background:#06050B;
+  --surface:linear-gradient(160deg, rgba(200,170,255,.09), rgba(255,255,255,.03) 55%, rgba(143,211,255,.05));
+  --es-risalto:linear-gradient(160deg, rgba(200,170,255,.16), rgba(255,255,255,.05) 50%, rgba(143,211,255,.09));
+  --line:rgba(255,255,255,.13); --es-luce:inset 0 1px 0 rgba(255,255,255,.22); --muted:rgba(233,236,241,.66); }
+html[data-tema="vetro"] body{ background:transparent; }
+html[data-tema="vetro"] body::before{ content:""; position:fixed; inset:-20%; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(38% 30% at 26% 22%, rgba(183,155,235,.55), transparent 70%),
+    radial-gradient(34% 28% at 80% 18%, rgba(143,211,255,.4), transparent 70%),
+    radial-gradient(42% 34% at 64% 80%, rgba(78,219,156,.3), transparent 70%),
+    radial-gradient(30% 40% at 14% 86%, rgba(183,155,235,.3), transparent 70%),
+    radial-gradient(26% 32% at 50% 48%, rgba(0,0,0,.8), transparent 75%);
+  filter:blur(40px) saturate(130%); animation:asScena 38s ease-in-out infinite alternate; }
+html[data-tema="vetro"] body::after{ content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background:rgba(6,5,11,.5); }
+@keyframes asScena{ 0%{ transform:translate3d(0,0,0) rotate(0deg) scale(1); } 50%{ transform:translate3d(4%,-3%,0) rotate(8deg) scale(1.06); } 100%{ transform:translate3d(-3%,4%,0) rotate(-6deg) scale(1.02); } }
+html[data-tema="vetro"] .kpi, html[data-tema="vetro"] .panel, html[data-tema="vetro"] .regime, html[data-tema="vetro"] .gate form{
+  -webkit-backdrop-filter:blur(26px) saturate(160%); backdrop-filter:blur(26px) saturate(160%); border-color:rgba(255,255,255,.14); }
+html[data-tema="vetro"] .panel{ border-radius:28px; box-shadow:var(--es-luce), 0 14px 36px rgba(0,0,0,.3); }
+html[data-tema="vetro"] .kpi{ border-radius:22px; }
+html[data-tema="vetro"] .regime, html[data-tema="vetro"] .gate form{ border-radius:30px; box-shadow:var(--es-luce), 0 20px 50px rgba(0,0,0,.45); }
+html[data-tema="vetro"] .regime::after, html[data-tema="vetro"] .gate form::before{ opacity:.8; }
+html[data-tema="vetro"] .panel .kpis .kpi{ background:rgba(255,255,255,.04); -webkit-backdrop-filter:none; backdrop-filter:none; }
+html[data-tema="vetro"] .matrix .c{ background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.1); }
+html[data-tema="vetro"] th{ background:rgba(18,14,30,.94); }
+html[data-tema="vetro"] .lock, html[data-tema="vetro"] .pill, html[data-tema="vetro"] .gate input{ background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.14); }
+html[data-tema="vetro"] .seg button{ border-color:rgba(255,255,255,.14); }
+html[data-tema="vetro"] .gate{ background:radial-gradient(600px 420px at 50% 40%, rgba(183,155,235,.16), transparent 70%), rgba(6,5,11,.86); -webkit-backdrop-filter:blur(30px); backdrop-filter:blur(30px); }
+/* l'icona mostra il tema del prossimo tocco: scuro → goccia (vetro), vetro → sole (chiaro), chiaro → luna (scuro) */
+html:not([data-tema]) .tema .sole{ display:none; }
+html[data-tema] .tema .goccia{ display:none; }
+@media (prefers-reduced-motion:reduce){ html[data-tema="vetro"] body::before{ animation:none; } }
+@media (prefers-reduced-transparency:reduce){
+  html[data-tema="vetro"] .kpi, html[data-tema="vetro"] .panel, html[data-tema="vetro"] .regime, html[data-tema="vetro"] .gate form, html[data-tema="vetro"] .gate{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+  html[data-tema="vetro"]{ --surface:#110E1A; } }
 </style>
 
 </head>
@@ -486,7 +522,7 @@ html[data-tema="chiaro"] .studio img, html[data-tema="chiaro"] .gate img, html[d
   <div class="status">
     <span class="pill" id="pill"><span class="dot"></span><span id="pillTxt">avvio…</span></span>
     <button id="refresh" type="button">Aggiorna</button>
-    <button id="tema" class="lock tema" type="button" aria-label="Cambia tema: chiaro o scuro" title="Tema chiaro o scuro"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="luna" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/><g class="sole"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg></button>
+    <button id="tema" class="lock tema" type="button" aria-label="Cambia tema" title="Tema: scuro, vetro o chiaro"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="goccia" d="M12 3c3.5 4.3 6 7.6 6 10.6A6 6 0 0 1 6 13.6C6 10.6 8.5 7.3 12 3z"/><path class="luna" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/><g class="sole"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg></button>
     <button id="lock" class="lock" type="button" title="Esci">Esci</button>
   </div>
 </header>
@@ -1167,10 +1203,12 @@ $("gateForm").addEventListener("submit", async e => {
 });
 $("tema").addEventListener("click", () => {
   const cambia = () => {
-    const chiaro = document.documentElement.dataset.tema !== "chiaro";
-    if (chiaro) document.documentElement.dataset.tema = "chiaro"; else delete document.documentElement.dataset.tema;
-    try { localStorage.setItem("as_tema", chiaro ? "chiaro" : "scuro"); } catch (e) {}
-    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = chiaro ? "#F3F4F6" : "#000000";
+    const ORDINE = ["scuro", "vetro", "chiaro"];
+    const ora = document.documentElement.dataset.tema || "scuro";
+    const nuovo = ORDINE[(ORDINE.indexOf(ora) + 1) % ORDINE.length];
+    if (nuovo === "scuro") delete document.documentElement.dataset.tema; else document.documentElement.dataset.tema = nuovo;
+    try { localStorage.setItem("as_tema", nuovo); } catch (e) {}
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = nuovo === "chiaro" ? "#F3F4F6" : nuovo === "vetro" ? "#06050B" : "#000000";
     if (D) render();
   };
   if (window.EsMovimento) EsMovimento.cambioPagina(cambia); else cambia();
