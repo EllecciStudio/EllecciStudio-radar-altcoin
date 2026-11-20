@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<script>/* tema scelto (predefinito scuro; anche "vetro" dal 19/11/2026) */try{var asT=localStorage.getItem("as_tema");if(asT==="chiaro"||asT==="vetro"){document.documentElement.dataset.tema=asT;document.querySelector('meta[name="theme-color"]').content=asT==="chiaro"?"#F3F4F6":"#000000";}}catch(e){}</script>
+<script>/* tema (20/11/2026, scelta di Luigi): due soli temi, "vetro" scuro (predefinito) e "chiaro" = vetro chiaro; il vecchio scuro non c'è più */try{var asT=localStorage.getItem("as_tema")==="chiaro"?"chiaro":"vetro";document.documentElement.dataset.tema=asT;document.querySelector('meta[name="theme-color"]').content=asT==="chiaro"?"#F3F4F6":"#000000";}catch(e){document.documentElement.dataset.tema="vetro";}</script>
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="googlebot" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -488,6 +488,31 @@ html[data-tema] .tema .goccia{ display:none; }
 @media (prefers-reduced-transparency:reduce){
   html[data-tema="vetro"] .kpi, html[data-tema="vetro"] .panel, html[data-tema="vetro"] .regime, html[data-tema="vetro"] .gate form{ -webkit-backdrop-filter:none; backdrop-filter:none; }
   html[data-tema="vetro"]{ --surface:#0B0D12; } }
+
+/* ===== Vetro chiaro (20/11/2026, scelta di Luigi: il vetro diventa il tema scuro e il chiaro è la sua versione chiara).
+   Stesso "sonar": onde viola sottili dall'angolo in alto a destra e luce azzurra in basso, su fondo chiaro; la scheda del regime
+   è vetro colorato chiaro, le altre schede bianche smerigliate. ===== */
+html[data-tema="chiaro"]{ background:var(--bg); --surface:rgba(255,255,255,.72);
+  --es-risalto:linear-gradient(165deg, rgba(110,79,192,.14), rgba(255,255,255,.7) 50%, rgba(31,120,180,.08)); }
+html[data-tema="chiaro"] body{ background:transparent; }
+html[data-tema="chiaro"] body::before{ content:""; position:fixed; z-index:-1; pointer-events:none; right:-35vmax; top:-35vmax; width:110vmax; height:110vmax; border-radius:50%;
+  background:
+    repeating-radial-gradient(circle, transparent var(--as-onda), rgba(110,79,192,.14) calc(var(--as-onda) + 1px), transparent calc(var(--as-onda) + 3px), transparent calc(var(--as-onda) + 56px)),
+    radial-gradient(closest-side, rgba(110,79,192,.16), rgba(31,120,180,.06) 45%, transparent 75%);
+  -webkit-mask:radial-gradient(closest-side, #000 20%, transparent 78%); mask:radial-gradient(closest-side, #000 20%, transparent 78%);
+  animation:asSonar 6s linear infinite; }
+html[data-tema="chiaro"] body::after{ content:""; position:fixed; z-index:-1; pointer-events:none; left:-20vw; bottom:-20vh; width:70vw; height:55vh;
+  background:radial-gradient(closest-side, rgba(31,120,180,.10), transparent); filter:blur(40px); }
+html[data-tema="chiaro"] .kpi, html[data-tema="chiaro"] .panel, html[data-tema="chiaro"] .regime, html[data-tema="chiaro"] .gate form{
+  -webkit-backdrop-filter:blur(22px) saturate(160%); backdrop-filter:blur(22px) saturate(160%); }
+html[data-tema="chiaro"] .regime, html[data-tema="chiaro"] .gate form{ border-radius:28px; border-color:rgba(110,79,192,.22); box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 18px 44px rgba(76,52,140,.14); }
+html[data-tema="chiaro"] .regime::after, html[data-tema="chiaro"] .gate form::before{ opacity:.45; }
+html[data-tema="chiaro"] .panel .kpis .kpi{ -webkit-backdrop-filter:none; backdrop-filter:none; background:rgba(255,255,255,.6); }
+html[data-tema="chiaro"] .gate{ background:radial-gradient(600px 420px at 50% 40%, rgba(110,79,192,.12), transparent 70%), var(--bg); }
+@media (prefers-reduced-motion:reduce){ html[data-tema="chiaro"] body::before{ animation:none; } }
+@media (prefers-reduced-transparency:reduce){
+  html[data-tema="chiaro"] .kpi, html[data-tema="chiaro"] .panel, html[data-tema="chiaro"] .regime, html[data-tema="chiaro"] .gate form{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+  html[data-tema="chiaro"]{ --surface:#FFFFFF; } }
 </style>
 
 <style id="es-ampiezza">
@@ -550,7 +575,7 @@ html[data-tema="chiaro"] .amp-tile{background:#FAFBFC}
   <div class="status">
     <span class="pill" id="pill"><span class="dot"></span><span id="pillTxt">avvio…</span></span>
     <button id="refresh" type="button">Aggiorna</button>
-    <button id="tema" class="lock tema" type="button" aria-label="Cambia tema" title="Tema: scuro, vetro o chiaro"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="goccia" d="M12 3c3.5 4.3 6 7.6 6 10.6A6 6 0 0 1 6 13.6C6 10.6 8.5 7.3 12 3z"/><path class="luna" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/><g class="sole"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg></button>
+    <button id="tema" class="lock tema" type="button" aria-label="Cambia tema" title="Tema: scuro o chiaro"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="goccia" d="M12 3c3.5 4.3 6 7.6 6 10.6A6 6 0 0 1 6 13.6C6 10.6 8.5 7.3 12 3z"/><path class="luna" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/><g class="sole"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg></button>
     <button id="lock" class="lock" type="button" title="Esci">Esci</button>
   </div>
 </header>
@@ -1371,10 +1396,8 @@ $("gateForm").addEventListener("submit", async e => {
 });
 $("tema").addEventListener("click", () => {
   const cambia = () => {
-    const ORDINE = ["scuro", "vetro", "chiaro"];
-    const ora = document.documentElement.dataset.tema || "scuro";
-    const nuovo = ORDINE[(ORDINE.indexOf(ora) + 1) % ORDINE.length];
-    if (nuovo === "scuro") delete document.documentElement.dataset.tema; else document.documentElement.dataset.tema = nuovo;
+    const nuovo = document.documentElement.dataset.tema === "chiaro" ? "vetro" : "chiaro"; // due temi: vetro scuro ↔ vetro chiaro
+    document.documentElement.dataset.tema = nuovo;
     try { localStorage.setItem("as_tema", nuovo); } catch (e) {}
     const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = nuovo === "chiaro" ? "#F3F4F6" : "#000000";
     if (D) render();
