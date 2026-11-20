@@ -490,6 +490,36 @@ html[data-tema] .tema .goccia{ display:none; }
   html[data-tema="vetro"]{ --surface:#0B0D12; } }
 </style>
 
+<style id="es-ampiezza">
+/* ===== Ampiezza della giornata (20/11/2026, idea dal reel di Order-Block.com, scheda 111 del secondo cervello):
+   quante altcoin salgono e quante scendono dall'apertura delle 00:00 UTC, il ventaglio delle linee e le più forti / più deboli ===== */
+.amp-split{position:relative;display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--line);gap:2px}
+.amp-split b{position:absolute;top:0;bottom:0;width:2px;background:var(--bg);opacity:.9}
+.amp-split i{display:block;height:100%;transition:flex-grow .6s var(--es-curva, ease)}
+.amp-split .su{background:var(--good)} .amp-split .giu{background:var(--bad)} .amp-split .pari{background:var(--faint)}
+.amp-scala{position:relative;height:14px;font:11px var(--mono);color:var(--faint);margin-top:-6px}
+.amp-scala span{position:absolute;top:0;white-space:nowrap}
+.amp-scala span:nth-child(2), .amp-scala span:nth-child(3){transform:translateX(-50%)}
+.amp-lettura{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:baseline}
+.amp-lettura h2{margin:0;font:700 19px/1.2 var(--display);text-wrap:balance}
+.amp-lettura p{margin:0;color:var(--muted);grid-column:1 / -1;max-width:70ch}
+.amp-lettura .note{font-size:12px;color:var(--faint)}
+.amp-leg{display:flex;flex-wrap:wrap;gap:6px 16px;font:12px var(--body);color:var(--muted)}
+.amp-leg span{display:inline-flex;align-items:center;gap:6px}
+.amp-leg i{display:inline-block;width:14px;height:2px;border-radius:2px}
+.amp-liste{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.amp-liste h4{margin:0 0 8px;font:600 13px var(--body);color:var(--muted)}
+.amp-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+.amp-tile{border:1px solid var(--line);border-radius:12px;background:var(--surface2);padding:8px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.amp-tile b{font:600 13px var(--body);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.amp-tile span{font:500 13px var(--mono);font-variant-numeric:tabular-nums}
+.amp-tile u{display:block;height:3px;border-radius:2px;background:var(--line);text-decoration:none;overflow:hidden}
+.amp-tile u em{display:block;height:100%;border-radius:2px}
+.amp-tile.su u em{background:var(--good)} .amp-tile.giu u em{background:var(--bad)}
+.amp-vuoto{color:var(--faint);font-size:13px}
+@media (max-width:720px){ .amp-liste{grid-template-columns:1fr} .amp-lettura{grid-template-columns:1fr} #ampiezza .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+html[data-tema="chiaro"] .amp-tile{background:#FAFBFC}
+</style>
 </head>
 <body>
 <div class="gate" id="gate">
@@ -569,6 +599,42 @@ html[data-tema] .tema .goccia{ display:none; }
     <div class="label">Regime attuale</div>
     <h2 id="regT">—</h2>
     <p id="regD">In attesa dei dati.</p>
+  </div>
+</section>
+
+<section class="panel" id="ampiezza" aria-label="Ampiezza della giornata">
+  <div class="panel-h">
+    <h3>Ampiezza della giornata</h3>
+    <small id="ampOra">dall'apertura delle 00:00 UTC (01:00 in Italia)</small>
+  </div>
+  <section class="kpis" aria-label="Quante salgono e quante scendono">
+    <div class="kpi"><span class="label">Salgono</span><span class="v num up" id="aSu">—</span><span class="s" id="aSuS">dall'apertura</span></div>
+    <div class="kpi"><span class="label">Scendono</span><span class="v num down" id="aGiu">—</span><span class="s" id="aGiuS">dall'apertura</span></div>
+    <div class="kpi"><span class="label">Quota che sale</span><span class="v num" id="aQuota">—</span><span class="s" id="aQuotaS">—</span></div>
+    <div class="kpi"><span class="label">Bitcoin oggi</span><span class="v num" id="aBtc">—</span><span class="s" id="aBtcS">dall'apertura</span></div>
+  </section>
+  <div class="amp-split" id="aSplit" aria-hidden="true"><i class="su" style="flex-grow:1"></i><i class="pari" style="flex-grow:0"></i><i class="giu" style="flex-grow:1"></i><b style="left:40%"></b><b style="left:60%"></b></div>
+  <div class="amp-scala" aria-hidden="true"><span style="left:0">salgono</span><span style="left:40%">40%</span><span style="left:60%">60%</span><span style="right:0">scendono</span></div>
+  <div class="amp-lettura">
+    <h2 id="aT">—</h2>
+    <p id="aD">In attesa dei dati.</p>
+    <p class="note" id="aNota">È la lettura del video (se la maggioranza sale si guardano le più forti, se scende le più deboli): il test storico sulle crypto è in corso. Descrive la giornata, non è un segnale.</p>
+  </div>
+  <div class="charts2">
+    <div>
+      <h4>Il ventaglio · ogni linea è un'altcoin, in % dall'apertura</h4>
+      <div class="amp-leg" id="aLeg"></div>
+      <div class="chartbox"><canvas id="chVent"></canvas></div>
+    </div>
+    <div>
+      <h4>Quota che sale durante la giornata · sopra 60% la maggioranza sale, sotto 40% scende</h4>
+      <div class="amp-leg"><span><i style="background:var(--alt)"></i>Quota delle altcoin sopra l'apertura</span></div>
+      <div class="chartbox"><canvas id="chQuota"></canvas></div>
+    </div>
+  </div>
+  <div class="amp-liste">
+    <div><h4>Le più forti dall'apertura</h4><div class="amp-tiles" id="aForti"></div></div>
+    <div><h4>Le più deboli dall'apertura</h4><div class="amp-tiles" id="aDeboli"></div></div>
   </div>
 </section>
 
@@ -895,6 +961,7 @@ async function load(force){
     prog.style.width = "100%";
     setTimeout(() => prog.style.width = "0", 600);
     render();
+    caricaAmpiezza();
   } catch (e){
     errBox.hidden = false;
     errBox.textContent = "Non riesco a scaricare i dati (" + (e.message || e) + "). Controlla la connessione: se Binance è bloccato dalla tua rete, prova da un'altra rete. " + (D ? "Mostro l'ultimo aggiornamento salvato." : "");
@@ -955,6 +1022,7 @@ function render(){
 
   renderOthers(m);
   drawChart(); drawHeat(); drawTable(); tickStatus();
+  if (A) disegnaAmpiezza();
   /* movimento "da dashboard" ogni volta che si apre l'app (DESIGN.md > Movimento): schede a cascata, numeri che contano, grafici che si disegnano */
   if (!entrato && window.EsMovimento){ entrato = true; EsMovimento.entra($("app"), {blocchi: ".kpi, .regime, .panel", numeri: ".kpi .v"}); }
 }
@@ -1176,6 +1244,108 @@ document.querySelector("thead").addEventListener("click", e => {
   S.sortK = sortK; S.sortDir = sortDir; store.set("ra_settings", S); drawTable();
 });
 
+/* ---------- ampiezza della giornata (20/11/2026) ----------
+   Per le altcoin dell'universo scelto: candele da 15 minuti di Binance dall'apertura delle 00:00 UTC, variazione di ognuna
+   dall'apertura, quante salgono e quante scendono, ventaglio delle linee e quota che sale durante la giornata. */
+let A = null, aCaricando = false, chVent = null, chQuota = null, aTimer = null;
+const AMP_MS = 5 * 60 * 1000;
+const oraIt = t => new Date(t).toLocaleTimeString("it-IT", {hour: "2-digit", minute: "2-digit"});
+const segno = v => v == null || isNaN(v) ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + dc(Math.abs(v), Math.abs(v) < 10 ? 2 : 1) + "%";
+async function caricaAmpiezza(){
+  if (aCaricando || !D || !D.rows || !D.rows.length) return; aCaricando = true;
+  try {
+    const now = new Date(), t0 = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+    const coins = D.rows.slice().sort((a, b) => a.rank - b.rank).map(r => r.sym);
+    const lista = ["BTC", ...coins];
+    const kl = await pool(lista, 8, s => bin(`/api/v3/klines?symbol=${s}USDT&interval=15m&startTime=${t0}&limit=96`), () => {});
+    const tempi = []; for (let t = t0; t <= Date.now(); t += 15 * 60 * 1000) tempi.push(t);
+    const serie = [];
+    lista.forEach((s, i) => {
+      const k = kl[i]; if (!k || !k.length || +k[0][0] !== t0) return;  // senza la candela delle 00:00 non c'è il prezzo d'apertura
+      const o = +k[0][1]; if (!(o > 0)) return;
+      const m = new Map(k.map(r => [+r[0], (+r[4] / o - 1) * 100]));
+      let ult = null; const v = tempi.map(t => { if (m.has(t)) ult = m.get(t); return ult; });
+      serie.push({sym: s, v, ora: v[v.length - 1]});
+    });
+    const btc = serie.find(x => x.sym === "BTC") || null;
+    const alt = serie.filter(x => x.sym !== "BTC" && x.ora != null);
+    if (alt.length < 10) throw new Error("troppe poche altcoin con dati di oggi");
+    const quota = tempi.map((_, j) => { const v = alt.map(x => x.v[j]).filter(x => x != null); return v.length >= 10 ? v.filter(x => x > 0).length / v.length * 100 : null; });
+    A = {at: Date.now(), t0, tempi, alt, btc, quota};
+    disegnaAmpiezza();
+  } catch (e){
+    $("aT").textContent = "Dati di oggi non disponibili";
+    $("aD").textContent = "Non riesco a scaricare le candele di oggi (" + (e.message || e) + "). Riprovo fra 5 minuti.";
+  } finally {
+    aCaricando = false;
+    clearTimeout(aTimer); aTimer = setTimeout(() => { if (!document.hidden) caricaAmpiezza(); }, AMP_MS);
+  }
+}
+function letturaAmpiezza(q, ore){
+  if (q == null) return ["—", "In attesa dei dati."];
+  const presto = ore < 1 ? " È passata meno di un'ora dall'apertura: la lettura cambia ancora molto." : "";
+  if (q >= 60) return ["La maggioranza sale", "Più di 6 altcoin su 10 sono sopra l'apertura. Nella lettura del video è la giornata in cui guardare le più forti (qui sotto a sinistra)." + presto];
+  if (q <= 40) return ["La maggioranza scende", "Meno di 4 altcoin su 10 sono sopra l'apertura. Nella lettura del video è la giornata in cui guardare le più deboli (qui sotto a destra)." + presto];
+  return ["Giornata divisa", "Tra il 40% e il 60% delle altcoin è sopra l'apertura: né rialzo né ribasso diffuso, la lettura del video non indica un lato." + presto];
+}
+function tiles(lista, max){
+  if (!lista.length) return '<div class="amp-vuoto">Nessuna.</div>';
+  return lista.map(x => `<div class="amp-tile ${x.ora > 0 ? "su" : x.ora < 0 ? "giu" : ""}"><b>${x.sym}</b><span class="${x.ora > 0 ? "up" : x.ora < 0 ? "down" : ""}">${segno(x.ora)}</span><u><em style="width:${Math.min(100, Math.abs(x.ora) / max * 100).toFixed(0)}%"></em></u></div>`).join("");
+}
+function disegnaAmpiezza(){
+  if (!A) return;
+  const alt = A.alt, n = alt.length;
+  const su = alt.filter(x => x.ora > 0).length, giu = alt.filter(x => x.ora < 0).length, pari = n - su - giu;
+  const q = su / n * 100, ore = (Date.now() - A.t0) / 3600000;
+  $("aSu").textContent = su; $("aSuS").textContent = `su ${n} altcoin`;
+  $("aGiu").textContent = giu; $("aGiuS").textContent = pari ? `${pari} ferme all'apertura` : `su ${n} altcoin`;
+  $("aQuota").textContent = fmtPct(q);
+  $("aQuota").className = "v num " + (q >= 60 ? "up" : q <= 40 ? "down" : "");
+  const qPrima = A.quota.length > 4 ? A.quota[A.quota.length - 5] : null;
+  $("aQuotaS").innerHTML = qPrima == null ? "sopra l'apertura" : `<span class="${q - qPrima >= 0 ? "up" : "down"}">${q - qPrima >= 0 ? "▲" : "▼"} ${dc(Math.abs(q - qPrima))}</span> in un'ora`;
+  const b = A.btc ? A.btc.ora : null;
+  $("aBtc").textContent = segno(b); $("aBtc").className = "v num " + (b > 0 ? "up" : b < 0 ? "down" : "");
+  const sp = $("aSplit").children; sp[0].style.flexGrow = su; sp[1].style.flexGrow = pari; sp[2].style.flexGrow = giu;
+  const [t, d] = letturaAmpiezza(q, ore); $("aT").textContent = t; $("aD").textContent = d;
+  $("ampOra").textContent = `dall'apertura delle 00:00 UTC (${oraIt(A.t0)} in Italia) · aggiornato alle ${oraIt(A.at)}`;
+  const ord = alt.slice().sort((x, y) => y.ora - x.ora);
+  const forti = ord.slice(0, 10).filter(x => x.ora > 0), deboli = ord.slice(-10).reverse().filter(x => x.ora < 0);
+  const max = Math.max(1e-9, ...ord.map(x => Math.abs(x.ora)));
+  $("aForti").innerHTML = tiles(forti, max); $("aDeboli").innerHTML = tiles(deboli, max);
+  const top5 = new Set(ord.slice(0, 5).map(x => x.sym)), bot5 = new Set(ord.slice(-5).map(x => x.sym));
+  const col = C(), verde = getComputedStyle(document.documentElement).getPropertyValue("--good").trim() || "#4EDB9C",
+    rosso = getComputedStyle(document.documentElement).getPropertyValue("--bad").trim() || "#FF6A5C",
+    viola = getComputedStyle(document.documentElement).getPropertyValue("--alt").trim() || "#B79BEB";
+  const chiaro = document.documentElement.dataset.tema === "chiaro";
+  $("aLeg").innerHTML = `<span><i style="background:${verde}"></i>Le 5 più forti</span><span><i style="background:${rosso}"></i>Le 5 più deboli</span><span><i style="background:${chiaro ? "rgba(55,65,81,.35)" : "rgba(201,210,222,.3)"}"></i>Le altre</span>` + (A.btc ? `<span><i style="background:${col.btc}"></i>Bitcoin</span>` : "");
+  const labels = A.tempi;
+  const sets = alt.map(x => {
+    const forte = top5.has(x.sym), debole = bot5.has(x.sym);
+    return {label: x.sym, data: x.v, borderColor: forte ? verde : debole ? rosso : (chiaro ? "rgba(55,65,81,.18)" : "rgba(201,210,222,.16)"),
+      borderWidth: forte || debole ? 2 : 1, order: forte || debole ? 0 : 2, pointRadius: 0, pointHoverRadius: 3, tension: .2, spanGaps: true};
+  });
+  if (A.btc) sets.push({label: "BTC", data: A.btc.v, borderColor: col.btc, borderWidth: 2, borderDash: [5, 4], order: 1, pointRadius: 0, pointHoverRadius: 3, tension: .2, spanGaps: true});
+  const mono = {family: "'IBM Plex Mono', ui-monospace, monospace", size: 11};
+  const tip = {backgroundColor: col.fumetto, titleColor: col.fumettoTesto, bodyColor: col.fumettoTesto, borderWidth: 0, cornerRadius: 14, padding: {x: 12, y: 8}, caretSize: 0, titleFont: mono, bodyFont: mono};
+  const asseX = {ticks: {color: col.assi, maxRotation: 0, autoSkipPadding: 14, maxTicksLimit: 6, font: mono, callback(v){ return oraIt(this.getLabelForValue(v)); }}, grid: {color: col.griglia2}};
+  if (chVent) chVent.destroy();
+  chVent = new Chart($("chVent").getContext("2d"), {type: "line", data: {labels, datasets: sets},
+    options: {responsive: true, maintainAspectRatio: false, animation: false, interaction: {mode: "nearest", intersect: false, axis: "xy"},
+      plugins: {legend: {display: false}, tooltip: Object.assign({}, tip, {callbacks: {title: it => oraIt(it[0].label), label: it => ` ${it.dataset.label}: ${segno(it.raw)}`}})},
+      scales: {x: asseX, y: {ticks: {color: col.assi, maxTicksLimit: 6, font: mono, callback: v => (v > 0 ? "+" : "") + dc(v, 0) + "%"},
+        grid: {color: c => c.tick.value === 0 ? (chiaro ? "rgba(15,23,42,.35)" : "rgba(255,255,255,.28)") : col.griglia}}}}});
+  if (chQuota) chQuota.destroy();
+  const fasce = {id: "fasceAmp", beforeDatasetsDraw(c){ const {ctx, chartArea: a, scales: {y}} = c; if (!a) return; ctx.save();
+    const f = (lo, hi, colr) => { ctx.fillStyle = colr; const y1 = y.getPixelForValue(hi), y2 = y.getPixelForValue(lo); ctx.fillRect(a.left, y1, a.right - a.left, y2 - y1); };
+    f(60, 100, chiaro ? "rgba(14,159,99,.08)" : "rgba(78,219,156,.07)"); f(0, 40, chiaro ? "rgba(217,58,43,.07)" : "rgba(255,106,92,.07)"); ctx.restore(); }};
+  chQuota = new Chart($("chQuota").getContext("2d"), {type: "line", data: {labels, datasets: [{label: "Quota che sale", data: A.quota, borderColor: viola, borderWidth: 2, pointRadius: 0, pointHoverRadius: 3, tension: .2, spanGaps: true}]},
+    plugins: [fasce],
+    options: {responsive: true, maintainAspectRatio: false, animation: false, interaction: {mode: "index", intersect: false},
+      plugins: {legend: {display: false}, tooltip: Object.assign({}, tip, {callbacks: {title: it => oraIt(it[0].label), label: it => ` Quota che sale: ${it.raw == null ? "—" : dc(it.raw) + "%"}`}})},
+      scales: {x: asseX, y: {min: 0, max: 100, ticks: {color: col.assi, stepSize: 20, font: mono, callback: v => v + "%"}, grid: {color: col.griglia}}}}});
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden && D && (!A || Date.now() - A.at > AMP_MS)) caricaAmpiezza(); });
+
 let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => D && drawHeat(), 150); });
 document.addEventListener("visibilitychange", () => { if (!document.hidden && D && Date.now() - D.at > REFRESH_MS) load(); });
 
@@ -1190,7 +1360,7 @@ let started = false;
 function start(){
   $("gate").hidden = true; $("app").hidden = false;
   if (started) return; started = true;
-  if (D) { if (D.win !== S.win || D.uni !== S.uni) D = null; else render(); }
+  if (D) { if (D.win !== S.win || D.uni !== S.uni) D = null; else { render(); caricaAmpiezza(); } }
   load();
 }
 $("gateForm").addEventListener("submit", async e => {
